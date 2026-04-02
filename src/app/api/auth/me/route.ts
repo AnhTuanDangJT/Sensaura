@@ -21,28 +21,40 @@ export async function GET() {
         return NextResponse.json({ user: null, configured: true });
     }
 
-    const db = await getDb();
-    const doc = await db.collection("users").findOne({ _id: userOid });
+    try {
+        const db = await getDb();
+        const doc = await db.collection("users").findOne({ _id: userOid });
 
-    if (!doc) {
-        return NextResponse.json({ user: null, configured: true });
+        if (!doc) {
+            return NextResponse.json({ user: null, configured: true });
+        }
+
+        const rawEmail = doc.email;
+        if (typeof rawEmail !== "string" || !rawEmail.trim()) {
+            return NextResponse.json({ user: null, configured: true });
+        }
+
+        const email = rawEmail.toLowerCase().trim();
+        const role = roleForEmail(email);
+
+        return NextResponse.json({
+            user: {
+                id: (doc._id as ObjectId).toString(),
+                name: doc.name as string,
+                email,
+                role,
+            },
+            configured: true,
+        });
+    } catch (e) {
+        console.error("/api/auth/me:", e);
+        return NextResponse.json(
+            {
+                user: null,
+                configured: true,
+                error: "Database unavailable.",
+            },
+            { status: 503 }
+        );
     }
-
-    const rawEmail = doc.email;
-    if (typeof rawEmail !== "string" || !rawEmail.trim()) {
-        return NextResponse.json({ user: null, configured: true });
-    }
-
-    const email = rawEmail.toLowerCase().trim();
-    const role = roleForEmail(email);
-
-    return NextResponse.json({
-        user: {
-            id: (doc._id as ObjectId).toString(),
-            name: doc.name as string,
-            email,
-            role,
-        },
-        configured: true,
-    });
 }

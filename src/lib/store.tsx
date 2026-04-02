@@ -44,19 +44,26 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         (async () => {
             try {
                 const meRes = await fetch("/api/auth/me", { credentials: "include" });
-                const me = (await meRes.json()) as {
-                    user: User | null;
-                    configured?: boolean;
-                };
+                let me: { user: User | null; configured?: boolean };
+                try {
+                    me = (await meRes.json()) as typeof me;
+                } catch {
+                    if (!cancelled) setServerConfigured(false);
+                    return;
+                }
                 if (cancelled) return;
                 if (me.configured === false) setServerConfigured(false);
                 if (me.user) setCurrentUser(me.user);
 
                 const artRes = await fetch("/api/artworks", { credentials: "include" });
-                const artData = (await artRes.json()) as { artworks?: Artwork[]; configured?: boolean };
-                if (cancelled) return;
-                if (artData.configured === false) setServerConfigured(false);
-                if (artData.artworks) setArtworks(artData.artworks);
+                try {
+                    const artData = (await artRes.json()) as { artworks?: Artwork[]; configured?: boolean };
+                    if (cancelled) return;
+                    if (artData.configured === false) setServerConfigured(false);
+                    if (artData.artworks) setArtworks(artData.artworks);
+                } catch {
+                    if (!cancelled) setServerConfigured(false);
+                }
             } finally {
                 if (!cancelled) setHydrated(true);
             }

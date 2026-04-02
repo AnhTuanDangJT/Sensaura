@@ -113,11 +113,14 @@ export async function POST(request: Request) {
     });
 
     if (upErr) {
-        console.error(upErr);
-        return NextResponse.json(
-            { error: "Failed to upload file to storage. Check Supabase bucket and policies." },
-            { status: 500 }
-        );
+        console.error("Supabase storage upload failed:", upErr);
+        const payload: { error: string; debug?: string } = {
+            error: "Failed to upload file to storage. Check Supabase bucket name, URL, and service role key in .env.local.",
+        };
+        if (process.env.NODE_ENV === "development") {
+            payload.debug = upErr.message;
+        }
+        return NextResponse.json(payload, { status: 500 });
     }
 
     const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path);
