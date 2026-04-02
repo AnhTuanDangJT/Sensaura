@@ -199,6 +199,72 @@ const InteractiveCTA = () => {
   );
 };
 
+const AboutProjectSection = () => {
+    return (
+        <section className="relative z-10 py-32 px-4 max-w-6xl mx-auto border-t border-white/5">
+            <div className="text-center mb-20">
+                <h2 className="text-4xl md:text-5xl font-bold mb-6">About the project</h2>
+                <div className="inline-block py-2 px-6 rounded-full border border-neon-pink/30 bg-neon-pink/5 mb-6">
+                    <span className="text-neon-pink font-medium text-sm tracking-widest uppercase">SENSAURA: How does your soul speak?</span>
+                </div>
+                <p className="text-xl text-white/60 max-w-3xl mx-auto font-light leading-relaxed">
+                    A 24-page mixed media zine combining papercraft, traditional art, and digital workflows into a unified emotional canvas.
+                </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <motion.div 
+                    initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+                    className="p-8 md:p-10 rounded-3xl bg-white/[0.02] border border-white/[0.05] relative overflow-hidden group shadow-2xl"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-br from-neon-pink/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <h3 className="text-2xl font-semibold mb-6 text-neon-pink drop-shadow-[0_0_8px_rgba(255,42,133,0.5)] relative z-10 flex items-center gap-3">
+                        <Heart className="w-6 h-6" /> The Vision
+                    </h3>
+                    <p className="text-white/70 leading-relaxed mb-6 font-light relative z-10 text-lg">
+                        Rooted in the DIY zine community and driven by vibrant hot pink themes, this collective project weaves together personal narratives, profound poetry, and expressive visual art. It is a shared journey exploring corporality, human identities, memory, and culture.
+                    </p>
+                    <p className="text-white/70 leading-relaxed font-light relative z-10 text-lg">
+                        Through evocative writings like <span className="italic text-white">"Just Words,"</span> <span className="italic text-white">"Growing Pains,"</span> and <span className="italic text-white">"I Burn Slow,"</span> the project acts as an emotional archive—reflecting our raw vulnerabilities and pure expressions of the soul, all waiting to be heard.
+                    </p>
+                </motion.div>
+
+                <motion.div 
+                    initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+                    className="p-8 md:p-10 rounded-3xl bg-white/[0.02] border border-white/[0.05] relative overflow-hidden group shadow-2xl"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-bl from-neon-cyan/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <h3 className="text-2xl font-semibold mb-8 text-neon-cyan drop-shadow-[0_0_8px_rgba(0,243,255,0.5)] relative z-10 flex items-center gap-3">
+                        <Sparkles className="w-6 h-6" /> The Creators
+                    </h3>
+                    <ul className="space-y-6 text-white/70 font-light relative z-10">
+                        <li className="flex flex-col">
+                            <strong className="text-white text-lg tracking-wide">Saskia Crisconio</strong>
+                            <span className="text-sm">Creative writing & group process coordination.</span>
+                        </li>
+                        <li className="flex flex-col">
+                            <strong className="text-white text-lg tracking-wide">Aya Vrantzoglou</strong>
+                            <span className="text-sm">Collaborative writing & core creative concept.</span>
+                        </li>
+                        <li className="flex flex-col">
+                            <strong className="text-white text-lg tracking-wide">Xhela Mocka</strong>
+                            <span className="text-sm">Visual artwork creation & physical zine production.</span>
+                        </li>
+                        <li className="flex flex-col">
+                            <strong className="text-white text-lg tracking-wide">Leen Jaafar</strong>
+                            <span className="text-sm">Layout framing & visual orchestration.</span>
+                        </li>
+                        <li className="flex flex-col">
+                            <strong className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple text-lg tracking-wide drop-shadow-[0_0_5px_rgba(0,243,255,0.5)]">Anh Tuan Dang (JT)</strong>
+                            <span className="text-sm">Web development to deliver this creative energy to the world.</span>
+                        </li>
+                    </ul>
+                </motion.div>
+            </div>
+        </section>
+    );
+};
+
 export default function SensauraLanding() {
   const [activeFeature, setActiveFeature] = useState<number | null>(null);
 
@@ -435,7 +501,7 @@ export default function SensauraLanding() {
                 <h3 className="text-3xl md:text-4xl font-semibold">Upload Your Art</h3>
               </div>
               <p className="text-white/60 text-lg leading-relaxed mb-8">
-                Start by uploading your visual masterpiece. Whether it’s a digital painting, photography, or an AI-generated concept, this is your boundless canvas.
+                Start by uploading your visual masterpiece. Whether it’s a digital painting, photography, or a mixed media concept, this is your boundless canvas.
               </p>
               <ul className="space-y-4 text-white/70">
                 <li className="flex items-center gap-3"><Sparkles className="w-6 h-6 text-neon-pink drop-shadow-[0_0_8px_#ff2a85]" /> Lossless image quality</li>
@@ -576,7 +642,7 @@ export default function SensauraLanding() {
             { 
               icon: Sparkles, 
               title: "Artistic Freedom", 
-              desc: "Upload any form of visual art—digital, traditional, or AI-generated. Your expression has no limits and your canvas is boundless.",
+              desc: "Upload any form of visual art—digital, traditional, or mixed media. Your expression has no limits and your canvas is boundless.",
               accent: "from-[#ff2a85] to-[#ff7eb3]",
               glowHover: "hover:shadow-[0_0_50px_rgba(255,42,133,0.15)]",
               iconColor: "text-[#ff2a85] drop-shadow-[0_0_12px_rgba(255,42,133,0.8)]",
@@ -786,15 +852,18 @@ export default function SensauraLanding() {
         </div>
       </section>
 
-      {/* 6. INTERACTIVE CALL TO ACTION */}
+      {/* 6. ABOUT THE PROJECT */}
+      <AboutProjectSection />
+
+      {/* 7. INTERACTIVE CALL TO ACTION */}
       <section className="relative z-10 pt-40 pb-10 px-4">
         <InteractiveCTA />
       </section>
 
-      {/* 7. QR CODE SHARING */}
+      {/* 8. QR CODE SHARING */}
       <QRCodeSection />
 
-      {/* 8. FOOTER */}
+      {/* 9. FOOTER */}
       <footer className="relative z-10 border-t border-white/10 py-12 px-6 bg-black">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="font-heading text-3xl tracking-wide text-white/90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Sensaura</div>
