@@ -23,8 +23,8 @@ const TypewriterText = ({ text, delay = 0, speed = 0.04 }: { text: string, delay
           key={index}
           aria-hidden="true"
           variants={{
-            hidden: { opacity: 0, filter: "blur(4px)", y: 5 },
-            visible: { opacity: 1, filter: "blur(0px)", y: 0 }
+            hidden: { opacity: 0, y: 5, scale: 0.95 },
+            visible: { opacity: 1, y: 0, scale: 1 }
           }}
           style={{ display: 'inline-block', whiteSpace: 'pre' }}
         >
@@ -37,11 +37,16 @@ const TypewriterText = ({ text, delay = 0, speed = 0.04 }: { text: string, delay
 
 const InteractiveCTA = () => {
   const [ctaMousePos, setCtaMousePos] = useState({ x: 500, y: 500 });
+  const rafRef = useRef<number | null>(null);
+
   const handleCtaMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    setCtaMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+    const targetX = e.clientX - rect.left;
+    const targetY = e.clientY - rect.top;
+    
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      setCtaMousePos({ x: targetX, y: targetY });
     });
   };
 
@@ -162,20 +167,20 @@ export default function SensauraLanding() {
         <motion.div 
           animate={{ x: [0, 100, 0], y: [0, -50, 0], scale: [1, 1.2, 1] }} 
           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          style={{ willChange: "transform" }}
-          className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-neon-purple/15 blur-[140px] rounded-full mix-blend-screen transform-gpu" 
+          style={{ willChange: "transform", background: "radial-gradient(circle, rgba(176,38,255,0.15) 0%, transparent 60%)" }}
+          className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full transform-gpu mix-blend-screen" 
         />
         <motion.div 
           animate={{ x: [0, -100, 0], y: [0, 50, 0], scale: [1, 1.3, 1] }} 
           transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          style={{ willChange: "transform" }}
-          className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-neon-cyan/15 blur-[140px] rounded-full mix-blend-screen transform-gpu" 
+          style={{ willChange: "transform", background: "radial-gradient(circle, rgba(0,243,255,0.15) 0%, transparent 60%)" }}
+          className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full transform-gpu mix-blend-screen" 
         />
         <motion.div 
           animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.7, 0.3] }} 
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          style={{ willChange: "transform, opacity" }}
-          className="absolute top-[30%] left-[50%] -translate-x-1/2 w-[60vw] h-[60vw] bg-neon-pink/10 blur-[150px] rounded-full mix-blend-screen transform-gpu" 
+          style={{ willChange: "transform, opacity", background: "radial-gradient(circle, rgba(255,42,133,0.1) 0%, transparent 60%)" }}
+          className="absolute top-[30%] left-[50%] -translate-x-1/2 w-[60vw] h-[60vw] rounded-full transform-gpu mix-blend-screen" 
         />
         
         {/* Abstract Art & Music Pattern */}
@@ -202,18 +207,18 @@ export default function SensauraLanding() {
                 fill="transparent"
                 stroke="url(#neon-draw-grad)"
                 strokeWidth="1.5"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 15, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+                initial={{ opacity: 0.2 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 4, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
               />
               <motion.path 
                 d="M -200 500 Q 500 -200, 1200 500 T 500 1200 T -200 500"
                 fill="transparent"
                 stroke="url(#neon-draw-grad-2)"
                 strokeWidth="1"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 0.5 }}
-                transition={{ duration: 20, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 2 }}
+                initial={{ opacity: 0.1 }}
+                animate={{ opacity: 0.5 }}
+                transition={{ duration: 6, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 2 }}
               />
               <defs>
                 <linearGradient id="neon-draw-grad" x1="0%" y1="0%" x2="100%" y2="100%">

@@ -83,7 +83,7 @@ export default function UploadArtPage() {
             </header>
 
             <Card className="p-8 glass-card border-[rgba(255,255,255,0.05)] bg-black/40 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-neon-pink/10 blur-[100px] rounded-full pointer-events-none" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle,rgba(255,42,133,0.1)_0%,transparent_60%)] rounded-full pointer-events-none transform-gpu" />
 
                 <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
                     <div
