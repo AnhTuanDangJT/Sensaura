@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 
 export default function AdminDashboardPage() {
-    const { currentUser, artworks, users, approveArtwork, rejectArtwork, deleteArtwork, fetchUsers } = useStore();
+    const { currentUser, artworks, users, approveArtwork, rejectArtwork, deleteArtwork, deleteUser, fetchUsers } = useStore();
     const router = useRouter();
 
     useEffect(() => {
@@ -164,10 +164,14 @@ export default function AdminDashboardPage() {
                                 <th className="px-6 py-4">Name</th>
                                 <th className="px-6 py-4">Email</th>
                                 <th className="px-6 py-4">Role</th>
+                                <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
-                            {users.map(user => (
+                            {users.map(user => {
+                                const canDelete =
+                                    user.role !== "ADMIN" && user.id !== currentUser?.id;
+                                return (
                                 <tr key={user.id} className="hover:bg-white/5 transition-colors">
                                     <td className="px-6 py-4 text-white font-medium">{user.name}</td>
                                     <td className="px-6 py-4">{user.email}</td>
@@ -176,8 +180,31 @@ export default function AdminDashboardPage() {
                                             {user.role}
                                         </span>
                                     </td>
+                                    <td className="px-6 py-4 text-right">
+                                        {canDelete ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    if (
+                                                        !confirm(
+                                                            `Delete account ${user.email}? This permanently removes the user and all of their artworks.`
+                                                        )
+                                                    ) {
+                                                        return;
+                                                    }
+                                                    void run(() => deleteUser(user.id));
+                                                }}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 transition-colors"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" /> Delete account
+                                            </button>
+                                        ) : (
+                                            <span className="text-white/25 text-xs">—</span>
+                                        )}
+                                    </td>
                                 </tr>
-                            ))}
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

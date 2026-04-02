@@ -20,6 +20,7 @@ type StoreContextType = {
     approveArtwork: (id: string) => Promise<void>;
     rejectArtwork: (id: string) => Promise<void>;
     deleteArtwork: (id: string) => Promise<void>;
+    deleteUser: (id: string) => Promise<void>;
     linkMusic: (id: string, data: string | File, type: string) => Promise<void>;
     removeMusicTrack: (id: string, trackIndex: number) => Promise<void>;
 };
@@ -146,6 +147,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         await refreshArtworks();
     };
 
+    const deleteUser = async (id: string) => {
+        const res = await fetch(`/api/users/${id}`, {
+            method: "DELETE",
+            credentials: "include",
+        });
+        if (!res.ok) throw new Error(await parseError(res));
+        await fetchUsers();
+        await refreshArtworks();
+    };
+
     const linkMusic = async (id: string, data: string | File, type: string) => {
         if (type === "upload" && data instanceof File) {
             const fd = new FormData();
@@ -193,6 +204,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
                 approveArtwork,
                 rejectArtwork,
                 deleteArtwork,
+                deleteUser,
                 linkMusic,
                 removeMusicTrack,
             }}
