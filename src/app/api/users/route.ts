@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
-import { getSession, isConfigured } from "@/lib/authHelpers";
+import { getSession, isConfigured, isSessionAdmin } from "@/lib/authHelpers";
 import { roleForEmail } from "@/lib/adminConfig";
 import type { User } from "@/lib/models";
 
@@ -11,7 +11,7 @@ export async function GET() {
     }
 
     const session = await getSession();
-    if (!session || session.role !== "ADMIN") {
+    if (!session || !isSessionAdmin(session)) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

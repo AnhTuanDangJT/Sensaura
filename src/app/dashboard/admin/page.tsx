@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore } from "@/lib/store";
+import { canSeeAdminPanel } from "@/lib/isAdminClient";
 import { motion } from "framer-motion";
 import { Check, X, ShieldAlert, Users, Trash2, ShieldCheck, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -12,18 +13,18 @@ export default function AdminDashboardPage() {
     const router = useRouter();
 
     useEffect(() => {
-        if (currentUser && currentUser.role !== "ADMIN") {
+        if (currentUser && !canSeeAdminPanel(currentUser)) {
             router.push("/dashboard");
         }
     }, [currentUser, router]);
 
     useEffect(() => {
-        if (currentUser?.role === "ADMIN") {
+        if (currentUser && canSeeAdminPanel(currentUser)) {
             void fetchUsers();
         }
-    }, [currentUser?.role, fetchUsers]);
+    }, [currentUser, fetchUsers]);
 
-    if (!currentUser || currentUser.role !== "ADMIN") return null;
+    if (!currentUser || !canSeeAdminPanel(currentUser)) return null;
 
     const run = async (fn: () => Promise<void>) => {
         try {

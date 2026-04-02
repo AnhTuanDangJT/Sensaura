@@ -5,6 +5,7 @@ import { Image as ImageIcon, Upload, UserCircle, ShieldCheck } from "lucide-reac
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStore } from "@/lib/store";
+import { canSeeAdminPanel } from "@/lib/isAdminClient";
 
 const navItems = [
     { icon: ImageIcon, label: "Gallery", href: "/dashboard" },
@@ -16,10 +17,9 @@ export function MobileNav() {
     const pathname = usePathname();
     const { currentUser } = useStore();
 
-    const items =
-        currentUser?.role === "ADMIN"
-            ? [...navItems, { icon: ShieldCheck, label: "Admin", href: "/dashboard/admin" }]
-            : navItems;
+    const items = canSeeAdminPanel(currentUser)
+        ? [...navItems, { icon: ShieldCheck, label: "Admin", href: "/dashboard/admin" }]
+        : navItems;
 
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-xl border-t border-white/10 flex items-center justify-around px-2 z-50">

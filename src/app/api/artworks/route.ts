@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import { randomBytes } from "crypto";
 import { getDb } from "@/lib/mongodb";
 import { getSupabaseAdmin, getArtworksBucket } from "@/lib/supabaseAdmin";
-import { getSession, isConfigured } from "@/lib/authHelpers";
+import { getSession, isConfigured, isSessionAdmin } from "@/lib/authHelpers";
 import { docToArtwork, type ArtworkDoc } from "@/lib/artworkDoc";
 
 export const maxDuration = 60;
@@ -25,7 +25,7 @@ export async function GET() {
         });
     }
 
-    if (session.role === "ADMIN") {
+    if (isSessionAdmin(session)) {
         const docs = await coll.find({}).sort({ createdAt: -1 }).toArray();
         return NextResponse.json({
             artworks: docs.map((d) => docToArtwork(d as ArtworkDoc)),

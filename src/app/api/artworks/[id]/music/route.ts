@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import { randomBytes } from "crypto";
 import { getDb } from "@/lib/mongodb";
 import { getSupabaseAdmin, getArtworksBucket } from "@/lib/supabaseAdmin";
-import { getSession, isConfigured } from "@/lib/authHelpers";
+import { getSession, isConfigured, isSessionAdmin } from "@/lib/authHelpers";
 import { docToArtwork, type ArtworkDoc } from "@/lib/artworkDoc";
 
 export const maxDuration = 60;
@@ -37,7 +37,7 @@ export async function POST(request: Request, ctx: Ctx) {
 
     const owner = art.userEmail.toLowerCase();
     const sessionEmail = session.email.toLowerCase();
-    if (session.role !== "ADMIN" && owner !== sessionEmail) {
+    if (!isSessionAdmin(session) && owner !== sessionEmail) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

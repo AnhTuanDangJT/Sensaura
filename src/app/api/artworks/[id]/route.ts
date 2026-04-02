@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
-import { getSession, isConfigured } from "@/lib/authHelpers";
+import { getSession, isConfigured, isSessionAdmin } from "@/lib/authHelpers";
 import { docToArtwork, type ArtworkDoc } from "@/lib/artworkDoc";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -12,7 +12,7 @@ export async function PATCH(request: Request, ctx: Ctx) {
     }
 
     const session = await getSession();
-    if (!session || session.role !== "ADMIN") {
+    if (!session || !isSessionAdmin(session)) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -57,7 +57,7 @@ export async function DELETE(_request: Request, ctx: Ctx) {
     }
 
     const session = await getSession();
-    if (!session || session.role !== "ADMIN") {
+    if (!session || !isSessionAdmin(session)) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

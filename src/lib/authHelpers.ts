@@ -1,7 +1,14 @@
 import { cookies } from "next/headers";
 import { verifySession, COOKIE_NAME, type SessionPayload } from "./session";
+import { roleForEmail } from "./adminConfig";
 
 export type { SessionPayload };
+
+/** Never trust session.role alone — derive admin from email (same rule as roleForEmail). */
+export function isSessionAdmin(session: SessionPayload | null): boolean {
+    if (!session?.email) return false;
+    return roleForEmail(session.email) === "ADMIN";
+}
 
 export async function getSession(): Promise<SessionPayload | null> {
     const cookieStore = await cookies();

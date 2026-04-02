@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useStore } from "@/lib/store";
+import { canSeeAdminPanel } from "@/lib/isAdminClient";
 
 const navItems = [
     { icon: ImageIcon, label: "Gallery", href: "/dashboard" },
@@ -19,7 +20,7 @@ export function Sidebar() {
     const pathname = usePathname();
     const { currentUser } = useStore();
 
-    const activeNavItems = currentUser?.role === "ADMIN" 
+    const activeNavItems = canSeeAdminPanel(currentUser)
         ? [...navItems, { icon: ShieldCheck, label: "Admin Panel", href: "/dashboard/admin" }]
         : navItems;
 

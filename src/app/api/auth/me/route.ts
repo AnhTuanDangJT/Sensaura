@@ -28,7 +28,12 @@ export async function GET() {
         return NextResponse.json({ user: null, configured: true });
     }
 
-    const email = (doc.email as string).toLowerCase();
+    const rawEmail = doc.email;
+    if (typeof rawEmail !== "string" || !rawEmail.trim()) {
+        return NextResponse.json({ user: null, configured: true });
+    }
+
+    const email = rawEmail.toLowerCase().trim();
     const role = roleForEmail(email);
 
     return NextResponse.json({
