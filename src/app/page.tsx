@@ -202,7 +202,10 @@ const InteractiveCTA = () => {
 const AboutProjectSection = () => {
     return (
         <section className="relative z-10 py-32 px-4 max-w-6xl mx-auto border-t border-white/5">
-            <div className="text-center mb-20">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 z-0 opacity-[0.03] mix-blend-overlay pointer-events-none" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }} />
+            
+            <div className="text-center mb-20 relative z-10">
                 <h2 className="text-4xl md:text-5xl font-bold mb-6">About the project</h2>
                 <div className="inline-block py-2 px-6 rounded-full border border-neon-pink/30 bg-neon-pink/5 mb-6">
                     <span className="text-neon-pink font-medium text-sm tracking-widest uppercase">SENSAURA: How does your soul speak?</span>
@@ -212,7 +215,7 @@ const AboutProjectSection = () => {
                 </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
                 <motion.div 
                     initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
                     className="p-8 md:p-10 rounded-3xl bg-white/[0.02] border border-white/[0.05] relative overflow-hidden group shadow-2xl"
@@ -225,7 +228,7 @@ const AboutProjectSection = () => {
                         Rooted in the DIY zine community and driven by vibrant hot pink themes, this collective project weaves together personal narratives, profound poetry, and expressive visual art. It is a shared journey exploring corporality, human identities, memory, and culture.
                     </p>
                     <p className="text-white/70 leading-relaxed font-light relative z-10 text-lg">
-                        Through evocative writings like <span className="italic text-white">"Just Words,"</span> <span className="italic text-white">"Growing Pains,"</span> and <span className="italic text-white">"I Burn Slow,"</span> the project acts as an emotional archive—reflecting our raw vulnerabilities and pure expressions of the soul, all waiting to be heard.
+                        Through evocative writings like <span className="italic text-white">"Just Words,"</span> <span className="italic text-white">"Growing Pains,"</span> and <span className="italic text-white">"I Burn Slow,"</span> the project acts as an emotional archive reflecting our raw vulnerabilities and pure expressions of the soul, all waiting to be heard.
                     </p>
                 </motion.div>
 
@@ -642,7 +645,7 @@ export default function SensauraLanding() {
             { 
               icon: Sparkles, 
               title: "Artistic Freedom", 
-              desc: "Upload any form of visual art—digital, traditional, or mixed media. Your expression has no limits and your canvas is boundless.",
+              desc: "Upload any form of visual art: digital, traditional, or mixed media. Your expression has no limits and your canvas is boundless.",
               accent: "from-[#ff2a85] to-[#ff7eb3]",
               glowHover: "hover:shadow-[0_0_50px_rgba(255,42,133,0.15)]",
               iconColor: "text-[#ff2a85] drop-shadow-[0_0_12px_rgba(255,42,133,0.8)]",
@@ -683,7 +686,6 @@ export default function SensauraLanding() {
             const isActive = activeFeature === i;
             return (
             <motion.div
-              layout
               key={i}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -694,9 +696,9 @@ export default function SensauraLanding() {
               className={`group relative p-6 md:p-8 rounded-3xl bg-white/[0.02] border border-white/[0.05] backdrop-blur-xl transition-all duration-500 overflow-hidden cursor-pointer ${feature.glowHover} ${feature.borderHover} ${feature.bgHover} ${isActive ? 'ring-1 ring-white/20 shadow-2xl scale-[1.02] bg-white/[0.06]' : ''}`}
             >
               {/* Trust-evoking "Scan Line" animation on hover instead of just static opacity */}
-              <div className={`absolute top-0 left-[-100%] w-[200%] h-[2px] opacity-0 group-hover:opacity-100 group-hover:animate-[draw_2s_ease-in-out_infinite] bg-gradient-to-r transparent ${feature.accent} transparent transition-opacity duration-500 ${isActive ? 'opacity-100 left-0 animate-none' : ''}`} />
+              <div className={`absolute top-0 left-[-100%] w-[200%] h-[2px] opacity-0 group-hover:opacity-100 group-hover:animate-[draw_2s_ease-in-out_infinite] bg-gradient-to-r transparent ${feature.accent} transparent transition-opacity duration-500 transform-gpu ${isActive ? 'opacity-100 left-0 animate-none' : ''}`} />
               
-              <motion.div layout className="flex flex-col items-center text-center gap-4">
+              <motion.div className="flex flex-col items-center text-center gap-4">
                 <div className={`shrink-0 w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-white/10 transition-colors duration-500 relative ${isActive ? 'bg-white/10' : ''}`}>
                   {/* Subtle inner pulse denoting active system/security */}
                   <div className={`absolute inset-0 rounded-2xl border border-white/20 scale-105 opacity-0 transition-all duration-700 ${isActive ? 'opacity-100' : 'group-hover:opacity-100 group-hover:animate-pulse'}`} />
@@ -717,7 +719,6 @@ export default function SensauraLanding() {
               </motion.div>
 
               <motion.div
-                layout
                 initial={false}
                 animate={{ height: isActive ? "auto" : 0, opacity: isActive ? 1 : 0, marginTop: isActive ? 16 : 0 }}
                 className="overflow-hidden text-center"
