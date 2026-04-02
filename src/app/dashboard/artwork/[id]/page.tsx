@@ -15,15 +15,17 @@ export default function ArtworkViewPage() {
     const [playingIndex, setPlayingIndex] = useState<number | null>(null);
     const [isLiked, setIsLiked] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { artworks } = useStore();
+    const { artworks, currentUser } = useStore();
 
     const storeArt = artworks.find(a => a.id === id);
     const art: any = storeArt ? {
         ...storeArt,
         desc: storeArt.desc || "No description provided for this artwork." // Fallback mock description
     } : {
-        id: "placeholder", title: "Unknown Canvas", artist: "Anonymous", hasMusic: false, image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&auto=format&fit=crop", desc: "No description provided for this artwork.", fileType: "image"
+        id: "placeholder", title: "Unknown Canvas", artist: "Anonymous", hasMusic: false, image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&auto=format&fit=crop", desc: "No description provided for this artwork.", fileType: "image", userEmail: ""
     };
+
+    const isOwner = currentUser?.email === art.userEmail;
 
     return (
         <>
@@ -205,7 +207,7 @@ export default function ArtworkViewPage() {
                                     </div>
                                 ))}
 
-                                {art.audioTracks.length < 3 && (
+                                {isOwner && art.audioTracks.length < 3 && (
                                     <div className="text-center mt-6">
                                         <Link href={`/dashboard/artwork/${id}/add-music`}>
                                             <Button variant="outline" className="text-neon-cyan border-neon-cyan/50 hover:bg-neon-cyan/10">
@@ -219,11 +221,15 @@ export default function ArtworkViewPage() {
                             <div className="p-10 rounded-3xl border border-dashed border-white/20 bg-black/20 text-center">
                                 <MusicIcon className="h-12 w-12 text-white/20 mx-auto mb-4" />
                                 <p className="text-white/50 mb-6 text-lg">No audio experience linked to this artwork.</p>
-                                <Link href={`/dashboard/artwork/${id}/add-music`}>
-                                    <Button className="border-none bg-neon-cyan text-black hover:bg-neon-cyan/80 shadow-[0_0_15px_rgba(0,243,255,0.3)]">
-                                        Link Spotify / Upload Audio
-                                    </Button>
-                                </Link>
+                                {isOwner ? (
+                                    <Link href={`/dashboard/artwork/${id}/add-music`}>
+                                        <Button className="border-none bg-neon-cyan text-black hover:bg-neon-cyan/80 shadow-[0_0_15px_rgba(0,243,255,0.3)]">
+                                            Link Spotify / Upload Audio
+                                        </Button>
+                                    </Link>
+                                ) : (
+                                    <p className="text-white/30 text-sm italic">Only the creator can add music to this artwork.</p>
+                                )}
                             </div>
                         )}
                     </motion.div>

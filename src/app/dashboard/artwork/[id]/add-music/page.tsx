@@ -18,10 +18,25 @@ export default function AddMusicPage() {
     const [activeTab, setActiveTab] = useState<"link" | "upload">("link");
     const [isLoading, setIsLoading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
-    const { artworks, linkMusic } = useStore();
+    const { artworks, linkMusic, currentUser, hydrated } = useStore();
 
     const storeArt = artworks.find(a => a.id === id);
     const hasMaxTracks = storeArt?.audioTracks ? storeArt.audioTracks.length >= 3 : false;
+
+    if (hydrated && storeArt && currentUser?.email !== storeArt.userEmail) {
+        return (
+            <div className="max-w-2xl mx-auto pb-20 mt-32 text-center">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 mb-6">
+                    <Music className="h-10 w-10 opacity-50" />
+                </div>
+                <h1 className="text-3xl font-bold text-white mb-4">Not Authorized</h1>
+                <p className="text-white/60 mb-8 text-lg">Only the creator of this artwork can add music to it.</p>
+                <Link href={`/dashboard/artwork/${id}`}>
+                    <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">Return to Artwork</Button>
+                </Link>
+            </div>
+        );
+    }
 
     const getAudioType = (url: string) => {
         if (url.includes("spotify.com")) return "spotify";
