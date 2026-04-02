@@ -459,14 +459,15 @@ const AboutProjectSection = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 md:p-10 overflow-y-auto pt-20"
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-10"
                         onClick={() => setIsWritingsOpen(false)}
                     >
                         <motion.div 
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] w-full max-w-4xl max-h-[85vh] overflow-hidden relative flex flex-col shadow-2xl"
+                            className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] w-full max-w-4xl max-h-[85vh] overflow-hidden relative flex flex-col shadow-2xl transform-gpu overscroll-contain"
+                            style={{ willChange: 'transform' }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             {/* Close Button */}
@@ -502,10 +503,6 @@ const AboutProjectSection = () => {
                                     ))}
                                 </div>
                             </div>
-
-                            {/* Modal Footer decorative blob */}
-                            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-neon-pink/10 blur-[100px] rounded-full pointer-events-none" />
-                            <div className="absolute -top-20 -left-20 w-64 h-64 bg-neon-cyan/10 blur-[100px] rounded-full pointer-events-none" />
                         </motion.div>
                     </motion.div>
                 )}
