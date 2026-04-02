@@ -6,7 +6,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     return (
         <div className="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             {/* Background blurs */}
-            <div className="flex-1 hidden lg:flex flex-col items-center justify-center bg-black/5 dark:bg-black relative overflow-hidden">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-[20%] -right-[10%] w-[700px] h-[500px] bg-[radial-gradient(circle,rgba(255,255,255,0.05)_0%,transparent_60%)] rounded-full transform-gpu" />
                 <div className="absolute -bottom-[20%] -left-[10%] w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(255,255,255,0.03)_0%,transparent_60%)] rounded-full transform-gpu" />
             </div>
