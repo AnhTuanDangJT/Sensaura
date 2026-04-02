@@ -8,13 +8,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
+import { parseError } from "@/lib/api-client";
 
 export default function UploadArtPage() {
     const [dragActive, setDragActive] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
-    const { addArtwork } = useStore();
+    const { refreshArtworks } = useStore();
 
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault();
@@ -39,7 +40,7 @@ export default function UploadArtPage() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!file) {
             toast.error("Please select a file to upload.");
@@ -51,28 +52,30 @@ export default function UploadArtPage() {
 
         setIsLoading(true);
 
-        // Parse file to Base64 to save exactly what the user uploaded
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const base64Data = event.target?.result as string;
-            
-            setTimeout(() => {
-                setIsLoading(false);
-                const isPdf = file.type === "application/pdf" || file.name.endsWith(".pdf");
-                
-                // Add artwork to global state natively
-                addArtwork({
-                    title: titleInput,
-                    image: base64Data, // Save actual file contents
-                    fileType: isPdf ? "pdf" : "image",
-                    desc: descInput
-                });
+        try {
+            const fd = new FormData();
+            fd.append("file", file);
+            fd.append("title", titleInput);
+            fd.append("description", descInput);
 
-                toast.success("Artwork submitted for admin review!");
-                router.push("/dashboard/my-art");
-            }, 1000); // UI visual timeout
-        };
-        reader.readAsDataURL(file);
+            const res = await fetch("/api/artworks", {
+                method: "POST",
+                body: fd,
+                credentials: "include",
+            });
+
+            if (!res.ok) {
+                throw new Error(await parseError(res));
+            }
+
+            await refreshArtworks();
+            toast.success("Artwork submitted for admin review!");
+            router.push("/dashboard/my-art");
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Upload failed.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

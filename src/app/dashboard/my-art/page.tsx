@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, CheckCircle2, XCircle, PlayCircle, Plus } from "lucide-react";
+import { Clock, CheckCircle2, XCircle, PlayCircle, Plus, FileText } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
@@ -75,7 +75,13 @@ export default function MyArtPage() {
                                 className="bg-black/40 rounded-xl border border-white/5 overflow-hidden group flex flex-col hover:border-white/20 transition-colors shadow-lg"
                             >
                                 <div className="aspect-square w-full relative overflow-hidden">
-                                    <img src={art.image} alt={art.title} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" />
+                                    {art.fileType === "pdf" ? (
+                                        <div className="w-full h-full flex items-center justify-center bg-black/50">
+                                            <FileText className="w-16 h-16 text-white/30" />
+                                        </div>
+                                    ) : (
+                                        <img src={art.image} alt={art.title} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" />
+                                    )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 </div>
                                 <div className="p-5 flex-1 flex flex-col justify-between relative z-10 -mt-8 bg-gradient-to-t from-black via-black to-transparent">

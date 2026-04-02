@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  serverExternalPackages: ["mongodb", "bcryptjs"],
 };
 
 export default nextConfig;

@@ -5,19 +5,34 @@ import { motion } from "framer-motion";
 import { Check, X, ShieldAlert, Users, Trash2, ShieldCheck, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function AdminDashboardPage() {
-    const { currentUser, artworks, users, approveArtwork, rejectArtwork, deleteArtwork } = useStore();
+    const { currentUser, artworks, users, approveArtwork, rejectArtwork, deleteArtwork, fetchUsers } = useStore();
     const router = useRouter();
 
     useEffect(() => {
-        // Protect route
         if (currentUser && currentUser.role !== "ADMIN") {
             router.push("/dashboard");
         }
     }, [currentUser, router]);
 
+    useEffect(() => {
+        if (currentUser?.role === "ADMIN") {
+            void fetchUsers();
+        }
+    }, [currentUser?.role, fetchUsers]);
+
     if (!currentUser || currentUser.role !== "ADMIN") return null;
+
+    const run = async (fn: () => Promise<void>) => {
+        try {
+            await fn();
+            toast.success("Updated.");
+        } catch (e) {
+            toast.error(e instanceof Error ? e.message : "Request failed.");
+        }
+    };
 
     const pendingArtworks = artworks.filter(art => art.status === "Pending");
     const approvedArtworks = artworks.filter(art => art.status === "Approved");
@@ -54,8 +69,12 @@ export default function AdminDashboardPage() {
                                 transition={{ delay: i * 0.1 }}
                                 className="flex flex-col sm:flex-row gap-4 p-4 rounded-2xl bg-white/5 border border-white/10"
                             >
-                                <div className="w-full sm:w-32 aspect-square rounded-xl overflow-hidden shrink-0">
-                                    <img src={art.image} alt={art.title} className="w-full h-full object-cover" />
+                                <div className="w-full sm:w-32 aspect-square rounded-xl overflow-hidden shrink-0 bg-black/50 flex items-center justify-center">
+                                    {art.fileType === "pdf" ? (
+                                        <FileText className="w-12 h-12 text-white/40" />
+                                    ) : (
+                                        <img src={art.image} alt={art.title} className="w-full h-full object-cover" />
+                                    )}
                                 </div>
                                 <div className="flex-1 flex flex-col justify-between py-1">
                                     <div>
@@ -64,13 +83,15 @@ export default function AdminDashboardPage() {
                                     </div>
                                     <div className="flex items-center gap-3 mt-4 sm:mt-0">
                                         <button 
-                                            onClick={() => approveArtwork(art.id)}
+                                            type="button"
+                                            onClick={() => run(() => approveArtwork(art.id))}
                                             className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-[#00ff88]/20 hover:bg-[#00ff88]/30 text-[#00ff88] border border-[#00ff88]/30 transition-all font-medium text-sm"
                                         >
                                             <Check className="w-4 h-4" /> Approve
                                         </button>
                                         <button 
-                                            onClick={() => rejectArtwork(art.id)}
+                                            type="button"
+                                            onClick={() => run(() => rejectArtwork(art.id))}
                                             className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-all font-medium text-sm"
                                         >
                                             <X className="w-4 h-4" /> Reject
@@ -117,7 +138,8 @@ export default function AdminDashboardPage() {
                                     </div>
                                     <div className="flex items-center mt-4 sm:mt-0">
                                         <button 
-                                            onClick={() => deleteArtwork(art.id)}
+                                            type="button"
+                                            onClick={() => run(() => deleteArtwork(art.id))}
                                             className="w-full sm:w-auto flex items-center justify-center gap-2 py-2 px-6 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all font-medium text-sm"
                                         >
                                             <Trash2 className="w-4 h-4" /> Delete Public Post

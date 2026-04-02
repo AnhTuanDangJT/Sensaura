@@ -7,29 +7,36 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useStore } from "@/lib/store";
 
 export default function RegisterPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const { register } = useStore();
 
-    const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setIsLoading(true);
-
         const formData = new FormData(e.currentTarget);
         const password = formData.get("password") as string;
+        const name = (formData.get("name") as string)?.trim();
+        const email = (formData.get("email") as string)?.trim();
 
         if (password.length < 8) {
-            setIsLoading(false);
             toast.error("Password must be at least 8 characters long.");
             return;
         }
 
-        setTimeout(() => {
-            setIsLoading(false);
+        setIsLoading(true);
+
+        try {
+            await register(name, email, password);
             toast.success("Account created successfully!");
             router.push("/dashboard");
-        }, 1500);
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Registration failed.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

@@ -2,9 +2,10 @@
 
 import { Button } from "@/components/ui/Button";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Sparkles, Image as ImageIcon, Headphones, Globe, Shield, Play, Heart } from "lucide-react";
+import { ArrowRight, Sparkles, Image as ImageIcon, Headphones, Globe, Shield, Play, Heart, Download } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { QRCodeCanvas } from "qrcode.react";
 
 const TypewriterText = ({ text, delay = 0, speed = 0.04 }: { text: string, delay?: number, speed?: number }) => {
   return (
@@ -33,6 +34,59 @@ const TypewriterText = ({ text, delay = 0, speed = 0.04 }: { text: string, delay
       ))}
     </motion.span>
   );
+};
+
+const QRCodeSection = () => {
+    const handleDownload = () => {
+        const canvas = document.getElementById("qr-code-canvas") as HTMLCanvasElement;
+        if (!canvas) return;
+        const pngUrl = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement("a");
+        downloadLink.href = pngUrl;
+        downloadLink.download = "Sensaura_QRCode.png";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+
+    return (
+        <section className="relative z-10 pt-10 pb-40 px-4 flex flex-col items-center justify-center">
+            <motion.div 
+               initial={{ opacity: 0, scale: 0.95 }}
+               whileInView={{ opacity: 1, scale: 1 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.8 }}
+               className="p-12 rounded-[3rem] border border-white/10 bg-black/40 relative overflow-hidden flex flex-col items-center gap-8 shadow-2xl"
+            >
+                <div className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-overlay pointer-events-none" />
+                
+                <div className="text-center relative z-10">
+                    <h3 className="text-4xl font-heading text-white mb-2">Share <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple drop-shadow-[0_0_8px_rgba(0,243,255,0.5)]">Sensaura</span></h3>
+                    <p className="text-white/60 font-light tracking-wide">Scan to access the platform easily on mobile</p>
+                </div>
+                
+                <div className="p-4 bg-white rounded-2xl shadow-[0_0_30px_rgba(0,243,255,0.3)] relative z-10">
+                    <QRCodeCanvas 
+                        id="qr-code-canvas" 
+                        value="https://sensaura.vercel.app/" 
+                        size={220} 
+                        bgColor="#ffffff" 
+                        fgColor="#000000" 
+                        level="H"
+                        includeMargin={false}
+                    />
+                </div>
+
+                <button 
+                    onClick={handleDownload}
+                    className="relative z-10 px-8 py-4 rounded-full bg-gradient-to-r from-neon-purple to-neon-cyan text-white font-medium hover:scale-105 transition-all duration-300 flex items-center gap-3 shadow-[0_0_20px_rgba(176,38,255,0.4)]"
+                >
+                    <Download className="w-5 h-5" />
+                    Download QR Code
+                </button>
+            </motion.div>
+        </section>
+    );
 };
 
 const InteractiveCTA = () => {
@@ -733,11 +787,14 @@ export default function SensauraLanding() {
       </section>
 
       {/* 6. INTERACTIVE CALL TO ACTION */}
-      <section className="relative z-10 py-40 px-4">
+      <section className="relative z-10 pt-40 pb-10 px-4">
         <InteractiveCTA />
       </section>
 
-      {/* 7. FOOTER */}
+      {/* 7. QR CODE SHARING */}
+      <QRCodeSection />
+
+      {/* 8. FOOTER */}
       <footer className="relative z-10 border-t border-white/10 py-12 px-6 bg-black">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="font-heading text-3xl tracking-wide text-white/90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Sensaura</div>

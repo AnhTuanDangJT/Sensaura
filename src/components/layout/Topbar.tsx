@@ -25,11 +25,11 @@ export function Topbar() {
                     <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-background" />
                 </button>
                 <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-medium text-sm shadow-md cursor-pointer ring-2 ring-transparent hover:ring-foreground/20 transition-all">
-                    {currentUser ? currentUser.name.substring(0, 2).toUpperCase() : 'JD'}
+                    {currentUser ? currentUser.name.substring(0, 2).toUpperCase() : "—"}
                 </div>
                 <button 
                   title="Sign Out" 
-                  onClick={() => { logout(); router.push('/'); }} 
+                  onClick={async () => { await logout(); router.push('/'); }} 
                   className="relative p-2 rounded-full hover:bg-neon-pink/10 text-white/60 hover:text-neon-pink transition-colors ml-2"
                 >
                     <LogOut className="h-5 w-5" />

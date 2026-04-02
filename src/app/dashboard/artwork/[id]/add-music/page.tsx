@@ -30,7 +30,7 @@ export default function AddMusicPage() {
         return "link";
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (activeTab === "upload" && !file) {
             toast.error("Please provide an audio file.");
@@ -39,32 +39,25 @@ export default function AddMusicPage() {
 
         setIsLoading(true);
 
-        if (activeTab === "upload" && file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const base64Data = event.target?.result as string;
-                setTimeout(() => {
+        try {
+            if (activeTab === "upload" && file) {
+                await linkMusic(id, file, "upload");
+            } else {
+                const linkInput = (e.currentTarget.elements.namedItem("link") as HTMLInputElement)?.value;
+                if (!linkInput) {
+                    toast.error("Please provide a valid URL.");
                     setIsLoading(false);
-                    linkMusic(id, base64Data, "upload");
-                    toast.success("Sonic experience successfully linked!");
-                    router.push(`/dashboard/artwork/${id}`);
-                }, 1000);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            const linkInput = (e.currentTarget.elements.namedItem("link") as HTMLInputElement)?.value;
-            if (!linkInput) {
-                toast.error("Please provide a valid URL.");
-                setIsLoading(false);
-                return;
+                    return;
+                }
+                const type = getAudioType(linkInput);
+                await linkMusic(id, linkInput, type);
             }
-            const type = getAudioType(linkInput);
-            setTimeout(() => {
-                setIsLoading(false);
-                linkMusic(id, linkInput, type);
-                toast.success("Sonic experience successfully linked!");
-                router.push(`/dashboard/artwork/${id}`);
-            }, 1000);
+            toast.success("Sonic experience successfully linked!");
+            router.push(`/dashboard/artwork/${id}`);
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Could not save music.");
+        } finally {
+            setIsLoading(false);
         }
     };
 

@@ -7,21 +7,30 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useStore } from "@/lib/store";
 
 export default function LoginPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const { login } = useStore();
 
-    const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false);
+        const form = new FormData(e.currentTarget);
+        const email = (form.get("email") as string)?.trim();
+        const password = form.get("password") as string;
+
+        try {
+            await login(email, password);
             toast.success("Successfully logged in!");
             router.push("/dashboard");
-        }, 1500);
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Sign in failed.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

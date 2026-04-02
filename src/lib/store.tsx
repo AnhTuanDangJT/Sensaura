@@ -1,138 +1,184 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import type { User, Artwork } from "./models";
+import { parseError } from "./api-client";
 
-export type User = {
-    id: string;
-    name: string;
-    email: string;
-    role: "ADMIN" | "USER";
-};
-
-export type Artwork = {
-    id: string;
-    title: string;
-    artist: string;
-    status: "Approved" | "Pending" | "Rejected";
-    hasMusic: boolean;
-    image: string;
-    userEmail: string;
-    fileType?: "image" | "pdf";
-    audioTracks?: { url: string; type: "link" | "upload" | "youtube" | "spotify" | "soundcloud" }[];
-    desc?: string;
-};
+export type { User, Artwork };
 
 type StoreContextType = {
     currentUser: User | null;
     users: User[];
     artworks: Artwork[];
-    login: (email: string) => void;
-    logout: () => void;
-    approveArtwork: (id: string) => void;
-    rejectArtwork: (id: string) => void;
-    addArtwork: (artwork: Pick<Artwork, "title" | "image" | "fileType" | "desc">) => void;
-    deleteArtwork: (id: string) => void;
-    linkMusic: (id: string, url: string, type: string) => void;
+    hydrated: boolean;
+    serverConfigured: boolean;
+    login: (email: string, password: string) => Promise<void>;
+    register: (name: string, email: string, password: string) => Promise<void>;
+    logout: () => Promise<void>;
+    refreshArtworks: () => Promise<void>;
+    fetchUsers: () => Promise<void>;
+    approveArtwork: (id: string) => Promise<void>;
+    rejectArtwork: (id: string) => Promise<void>;
+    deleteArtwork: (id: string) => Promise<void>;
+    linkMusic: (id: string, data: string | File, type: string) => Promise<void>;
 };
 
 const StoreContext = createContext<StoreContextType | null>(null);
 
-const INITIAL_USERS: User[] = [
-    { id: "1", name: "Anh Tuan", email: "dganhtuan.2k5@gmail.com", role: "ADMIN" },
-];
-
-const INITIAL_ARTWORKS: Artwork[] = [];
-
 export function StoreProvider({ children }: { children: React.ReactNode }) {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
-    const [users] = useState<User[]>(INITIAL_USERS);
-    const [artworks, setArtworks] = useState<Artwork[]>(INITIAL_ARTWORKS);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [users, setUsers] = useState<User[]>([]);
+    const [artworks, setArtworks] = useState<Artwork[]>([]);
+    const [hydrated, setHydrated] = useState(false);
+    const [serverConfigured, setServerConfigured] = useState(true);
 
-    // Persist session artificially for demo
-    useEffect(() => {
-        const stored = localStorage.getItem("sensaura_user");
-        if (stored) {
-            try { setCurrentUser(JSON.parse(stored)); } catch (e) {}
-        } else {
-            // Force admin login for the exercise initially
-            setCurrentUser(INITIAL_USERS[0]);
-        }
-
-        // Load persisted artworks
-        const storedArt = localStorage.getItem("sensaura_artworks");
-        if (storedArt && storedArt !== "[]") {
-            try { setArtworks(JSON.parse(storedArt)); } catch (e) {}
-        }
-        setIsLoaded(true);
+    const refreshArtworks = useCallback(async () => {
+        const res = await fetch("/api/artworks", { credentials: "include" });
+        const data = (await res.json()) as { artworks?: Artwork[]; configured?: boolean };
+        if (data.configured === false) setServerConfigured(false);
+        if (data.artworks) setArtworks(data.artworks);
     }, []);
 
-    // Sync artworks to local storage whenever a user modifies them
     useEffect(() => {
-        if (isLoaded) {
-            localStorage.setItem("sensaura_artworks", JSON.stringify(artworks));
-        }
-    }, [artworks, isLoaded]);
+        let cancelled = false;
+        (async () => {
+            try {
+                const meRes = await fetch("/api/auth/me", { credentials: "include" });
+                const me = (await meRes.json()) as {
+                    user: User | null;
+                    configured?: boolean;
+                };
+                if (cancelled) return;
+                if (me.configured === false) setServerConfigured(false);
+                if (me.user) setCurrentUser(me.user);
 
-    const login = (email: string) => {
-        const user = users.find(u => u.email === email);
-        if (user) {
-            setCurrentUser(user);
-            localStorage.setItem("sensaura_user", JSON.stringify(user));
-        } else {
-            // Fake user creation
-            const newUser: User = { id: Math.random().toString(), name: email.split("@")[0], email, role: "USER" };
-            setCurrentUser(newUser);
-            localStorage.setItem("sensaura_user", JSON.stringify(newUser));
-        }
-    };
-
-    const logout = () => {
-        setCurrentUser(null);
-        localStorage.removeItem("sensaura_user");
-    };
-
-    const approveArtwork = (id: string) => {
-        setArtworks(prev => prev.map(art => art.id === id ? { ...art, status: "Approved" } : art));
-    };
-    
-    const rejectArtwork = (id: string) => {
-        setArtworks(prev => prev.map(art => art.id === id ? { ...art, status: "Rejected" } : art));
-    };
-
-    const deleteArtwork = (id: string) => {
-        setArtworks(prev => prev.filter(art => art.id !== id));
-    };
-
-    const linkMusic = (id: string, url: string, type: string) => {
-        setArtworks(prev => prev.map(art => {
-            if (art.id === id) {
-                const tracks = art.audioTracks || [];
-                if (tracks.length >= 3) return art; // Safety max bound
-                return { ...art, hasMusic: true, audioTracks: [...tracks, { url, type: type as any }] };
+                const artRes = await fetch("/api/artworks", { credentials: "include" });
+                const artData = (await artRes.json()) as { artworks?: Artwork[]; configured?: boolean };
+                if (cancelled) return;
+                if (artData.configured === false) setServerConfigured(false);
+                if (artData.artworks) setArtworks(artData.artworks);
+            } finally {
+                if (!cancelled) setHydrated(true);
             }
-            return art;
-        }));
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const login = async (email: string, password: string) => {
+        const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+            credentials: "include",
+        });
+        if (!res.ok) throw new Error(await parseError(res));
+        const data = (await res.json()) as { user: User };
+        setCurrentUser(data.user);
+        await refreshArtworks();
     };
 
-    const addArtwork = (opts: Pick<Artwork, "title" | "image" | "fileType" | "desc">) => {
-        if (!currentUser) return;
-        const newArt: Artwork = {
-            id: Math.random().toString(),
-            title: opts.title,
-            artist: currentUser.name,
-            status: "Pending",
-            hasMusic: false,
-            image: opts.image,
-            userEmail: currentUser.email,
-            fileType: opts.fileType || "image",
-            desc: opts.desc || ""
-        };
-        setArtworks(prev => [newArt, ...prev]);
+    const register = async (name: string, email: string, password: string) => {
+        const res = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password }),
+            credentials: "include",
+        });
+        if (!res.ok) throw new Error(await parseError(res));
+        const data = (await res.json()) as { user: User };
+        setCurrentUser(data.user);
+        await refreshArtworks();
+    };
+
+    const logout = async () => {
+        await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+        setCurrentUser(null);
+        setUsers([]);
+        setArtworks([]);
+        await refreshArtworks();
+    };
+
+    const fetchUsers = useCallback(async () => {
+        const res = await fetch("/api/users", { credentials: "include" });
+        if (!res.ok) return;
+        const data = (await res.json()) as { users?: User[] };
+        if (data.users) setUsers(data.users);
+    }, []);
+
+    const approveArtwork = async (id: string) => {
+        const res = await fetch(`/api/artworks/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "approve" }),
+            credentials: "include",
+        });
+        if (!res.ok) throw new Error(await parseError(res));
+        await refreshArtworks();
+    };
+
+    const rejectArtwork = async (id: string) => {
+        const res = await fetch(`/api/artworks/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "reject" }),
+            credentials: "include",
+        });
+        if (!res.ok) throw new Error(await parseError(res));
+        await refreshArtworks();
+    };
+
+    const deleteArtwork = async (id: string) => {
+        const res = await fetch(`/api/artworks/${id}`, {
+            method: "DELETE",
+            credentials: "include",
+        });
+        if (!res.ok) throw new Error(await parseError(res));
+        await refreshArtworks();
+    };
+
+    const linkMusic = async (id: string, data: string | File, type: string) => {
+        if (type === "upload" && data instanceof File) {
+            const fd = new FormData();
+            fd.append("file", data);
+            const res = await fetch(`/api/artworks/${id}/music`, {
+                method: "POST",
+                body: fd,
+                credentials: "include",
+            });
+            if (!res.ok) throw new Error(await parseError(res));
+        } else {
+            const res = await fetch(`/api/artworks/${id}/music`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ link: data }),
+                credentials: "include",
+            });
+            if (!res.ok) throw new Error(await parseError(res));
+        }
+        await refreshArtworks();
     };
 
     return (
-        <StoreContext.Provider value={{ currentUser, users, artworks, login, logout, approveArtwork, rejectArtwork, addArtwork, deleteArtwork, linkMusic }}>
+        <StoreContext.Provider
+            value={{
+                currentUser,
+                users,
+                artworks,
+                hydrated,
+                serverConfigured,
+                login,
+                register,
+                logout,
+                refreshArtworks,
+                fetchUsers,
+                approveArtwork,
+                rejectArtwork,
+                deleteArtwork,
+                linkMusic,
+            }}
+        >
             {children}
         </StoreContext.Provider>
     );
