@@ -35,10 +35,8 @@ const TypewriterText = ({ text, delay = 0, speed = 0.04 }: { text: string, delay
   );
 };
 
-export default function SensauraLanding() {
-  const [activeFeature, setActiveFeature] = useState<number | null>(null);
+const InteractiveCTA = () => {
   const [ctaMousePos, setCtaMousePos] = useState({ x: 500, y: 500 });
-
   const handleCtaMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setCtaMousePos({
@@ -46,6 +44,104 @@ export default function SensauraLanding() {
       y: e.clientY - rect.top,
     });
   };
+
+  return (
+        <div 
+          className="max-w-6xl mx-auto rounded-[3rem] border border-white/10 bg-black/40 overflow-hidden relative group cursor-crosshair transform-gpu"
+          onMouseMove={handleCtaMouseMove}
+        >
+          {/* Interactive Spotlight */}
+          <div 
+            className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none mix-blend-screen"
+            style={{
+              willChange: "background",
+              background: `radial-gradient(800px circle at ${ctaMousePos.x}px ${ctaMousePos.y}px, rgba(176,38,255,0.15), transparent 40%)`
+            }}
+          />
+          <div 
+            className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none mix-blend-screen"
+            style={{
+              willChange: "background",
+              background: `radial-gradient(300px circle at ${ctaMousePos.x}px ${ctaMousePos.y}px, rgba(0,243,255,0.3), transparent 50%)`
+            }}
+          />
+          <div 
+            className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-overlay pointer-events-none" 
+          />
+
+          <div className="relative z-10 py-32 px-10 text-center flex flex-col items-center justify-center">
+            <motion.div
+               initial={{ opacity: 0, scale: 0.95 }}
+               whileInView={{ opacity: 1, scale: 1 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.8 }}
+            >
+              <div className="inline-block py-2 px-6 rounded-full border border-white/20 bg-white/5 backdrop-blur-md mb-8">
+                <span className="text-neon-cyan font-medium text-sm tracking-widest uppercase">Your Masterpiece Awaits</span>
+              </div>
+              
+              <div 
+                className="relative cursor-crosshair group/text mb-12"
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  e.currentTarget.style.setProperty('--x', `${e.clientX - rect.left}px`);
+                  e.currentTarget.style.setProperty('--y', `${e.clientY - rect.top}px`);
+                }}
+              >
+                {/* Base Dark Text */}
+                <div className="text-white/[0.03] transition-colors duration-500">
+                  <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+                    Let your soul be seen.
+                  </h2>
+                  <h2 className="font-heading text-4xl md:text-6xl">
+                    Let your story be heard.
+                  </h2>
+                </div>
+
+                {/* Glowing Revealed Text */}
+                <div 
+                  className="absolute inset-0 z-10 pointer-events-none opacity-0 group-hover/text:opacity-100 transition-opacity duration-300 transform-gpu"
+                  style={{
+                    willChange: "mask-image, -webkit-mask-image",
+                    maskImage: 'radial-gradient(150px circle at var(--x, 50%) var(--y, 50%), black 20%, transparent 100%)',
+                    WebkitMaskImage: 'radial-gradient(150px circle at var(--x, 50%) var(--y, 50%), black 20%, transparent 100%)'
+                  }}
+                >
+                  <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                    Let your soul be <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">seen.</span>
+                  </h2>
+                  <h2 className="font-heading text-4xl md:text-6xl text-neon-pink drop-shadow-[0_0_20px_rgba(255,42,133,0.5)]">
+                    Let your story be heard.
+                  </h2>
+                </div>
+              </div>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="mt-8 relative"
+              >
+                {/* Glowing decorative line */}
+                <div className="w-48 h-[1px] bg-gradient-to-r from-transparent via-neon-pink to-transparent mx-auto mb-10 opacity-50" />
+                
+                <p className="text-2xl md:text-3xl font-light text-white/80 italic tracking-wide drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                  An exclusive sanctuary for visionaries to express what words cannot.
+                </p>
+                <div className="flex items-center justify-center gap-4 mt-8 text-neon-cyan/60">
+                  <Sparkles className="w-4 h-4 animate-pulse duration-1000" />
+                  <span className="uppercase tracking-[0.3em] text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple drop-shadow-[0_0_8px_rgba(0,243,255,0.5)]">No Algorithms. Just Pure Emotion.</span>
+                  <Sparkles className="w-4 h-4 animate-pulse duration-1000" />
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+  );
+};
+
+export default function SensauraLanding() {
+  const [activeFeature, setActiveFeature] = useState<number | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -66,17 +162,20 @@ export default function SensauraLanding() {
         <motion.div 
           animate={{ x: [0, 100, 0], y: [0, -50, 0], scale: [1, 1.2, 1] }} 
           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-neon-purple/15 blur-[140px] rounded-full mix-blend-screen" 
+          style={{ willChange: "transform" }}
+          className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-neon-purple/15 blur-[140px] rounded-full mix-blend-screen transform-gpu" 
         />
         <motion.div 
           animate={{ x: [0, -100, 0], y: [0, 50, 0], scale: [1, 1.3, 1] }} 
           transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-neon-cyan/15 blur-[140px] rounded-full mix-blend-screen" 
+          style={{ willChange: "transform" }}
+          className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-neon-cyan/15 blur-[140px] rounded-full mix-blend-screen transform-gpu" 
         />
         <motion.div 
           animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.7, 0.3] }} 
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[30%] left-[50%] -translate-x-1/2 w-[60vw] h-[60vw] bg-neon-pink/10 blur-[150px] rounded-full mix-blend-screen" 
+          style={{ willChange: "transform, opacity" }}
+          className="absolute top-[30%] left-[50%] -translate-x-1/2 w-[60vw] h-[60vw] bg-neon-pink/10 blur-[150px] rounded-full mix-blend-screen transform-gpu" 
         />
         
         {/* Abstract Art & Music Pattern */}
@@ -630,94 +729,7 @@ export default function SensauraLanding() {
 
       {/* 6. INTERACTIVE CALL TO ACTION */}
       <section className="relative z-10 py-40 px-4">
-        <div 
-          className="max-w-6xl mx-auto rounded-[3rem] border border-white/10 bg-black/40 overflow-hidden relative group cursor-crosshair"
-          onMouseMove={handleCtaMouseMove}
-        >
-          {/* Interactive Spotlight */}
-          <div 
-            className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none mix-blend-screen"
-            style={{
-              background: `radial-gradient(800px circle at ${ctaMousePos.x}px ${ctaMousePos.y}px, rgba(176,38,255,0.15), transparent 40%)`
-            }}
-          />
-          <div 
-            className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none mix-blend-screen"
-            style={{
-              background: `radial-gradient(300px circle at ${ctaMousePos.x}px ${ctaMousePos.y}px, rgba(0,243,255,0.3), transparent 50%)`
-            }}
-          />
-          <div 
-            className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-overlay pointer-events-none" 
-          />
-
-          <div className="relative z-10 py-32 px-10 text-center flex flex-col items-center justify-center">
-            <motion.div
-               initial={{ opacity: 0, scale: 0.95 }}
-               whileInView={{ opacity: 1, scale: 1 }}
-               viewport={{ once: true }}
-               transition={{ duration: 0.8 }}
-            >
-              <div className="inline-block py-2 px-6 rounded-full border border-white/20 bg-white/5 backdrop-blur-md mb-8">
-                <span className="text-neon-cyan font-medium text-sm tracking-widest uppercase">Your Masterpiece Awaits</span>
-              </div>
-              
-              <div 
-                className="relative cursor-crosshair group/text mb-12"
-                onMouseMove={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  e.currentTarget.style.setProperty('--x', `${e.clientX - rect.left}px`);
-                  e.currentTarget.style.setProperty('--y', `${e.clientY - rect.top}px`);
-                }}
-              >
-                {/* Base Dark Text */}
-                <div className="text-white/[0.03] transition-colors duration-500">
-                  <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-                    Let your soul be seen.
-                  </h2>
-                  <h2 className="font-heading text-4xl md:text-6xl">
-                    Let your story be heard.
-                  </h2>
-                </div>
-
-                {/* Glowing Revealed Text */}
-                <div 
-                  className="absolute inset-0 z-10 pointer-events-none opacity-0 group-hover/text:opacity-100 transition-opacity duration-300"
-                  style={{
-                    maskImage: 'radial-gradient(150px circle at var(--x, 50%) var(--y, 50%), black 20%, transparent 100%)',
-                    WebkitMaskImage: 'radial-gradient(150px circle at var(--x, 50%) var(--y, 50%), black 20%, transparent 100%)'
-                  }}
-                >
-                  <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-                    Let your soul be <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">seen.</span>
-                  </h2>
-                  <h2 className="font-heading text-4xl md:text-6xl text-neon-pink drop-shadow-[0_0_20px_rgba(255,42,133,0.5)]">
-                    Let your story be heard.
-                  </h2>
-                </div>
-              </div>
-              
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
-                className="mt-8 relative"
-              >
-                {/* Glowing decorative line */}
-                <div className="w-48 h-[1px] bg-gradient-to-r from-transparent via-neon-pink to-transparent mx-auto mb-10 opacity-50" />
-                
-                <p className="text-2xl md:text-3xl font-light text-white/80 italic tracking-wide drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
-                  An exclusive sanctuary for visionaries to express what words cannot.
-                </p>
-                <div className="flex items-center justify-center gap-4 mt-8 text-neon-cyan/60">
-                  <Sparkles className="w-4 h-4 animate-pulse duration-1000" />
-                  <span className="uppercase tracking-[0.3em] text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple drop-shadow-[0_0_8px_rgba(0,243,255,0.5)]">No Algorithms. Just Pure Emotion.</span>
-                  <Sparkles className="w-4 h-4 animate-pulse duration-1000" />
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
+        <InteractiveCTA />
       </section>
 
       {/* 7. FOOTER */}
