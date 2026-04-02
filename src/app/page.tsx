@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Sparkles, Image as ImageIcon, Headphones, Globe, Shield, Play, Heart, Download } from "lucide-react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { ArrowRight, Sparkles, Image as ImageIcon, Headphones, Globe, Shield, Play, Heart, Download, X } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
@@ -199,7 +199,186 @@ const InteractiveCTA = () => {
   );
 };
 
+const WRITINGS = [
+  {
+    author: "Saskia Crisconio",
+    poems: [
+      {
+        title: "JUST WORDS",
+        content: `For I have seen, 
+Beautiful creatures and horrible monsters.
+
+For I have gathered 
+with courageous heroes and 
+fought, by their side, villainous types.
+
+For I have cried, my dearest friend’s
+deaths,
+and avenged them, with all my strength.
+
+For I have stood, head up, 
+even when my wounds 
+were leading to my death.
+
+For all the above, and many other,
+I was built to believe 
+That it all happened for real.
+
+Yet, it was ink on a piece of paper,
+words, running through the pages
+creating a world that moves together,
+
+Where, I lived,
+Thousands of lives.`
+      },
+      {
+        title: "I BURN SLOW",
+        content: `Sun is out
+and still I burn slow.
+
+I wait for the end,
+and play pretends.
+
+My eyes are off, my arms in the flow
+Of the hot air, with no snow.
+
+I burn slow,
+I’m melting fast
+It's good when it lasts.`
+      },
+      {
+        title: "My last letter",
+        content: `Dear young S,
+I know you are unsafe.
+I know you feel alone.
+Remember what I had told you?
+
+Trees covered in snow,
+Laughs echoing and,
+The sun is still shining through.
+Remember what I had told you?
+
+Squirrels running by,
+It is now six months since you said goodbye,
+Still remember what I had told you?
+
+Your dream, my dream.
+Don’t forget to let that go, because,
+                                                        now, you feel alive.`
+      },
+      {
+        title: "Tell me again",
+        content: `Tell me again,
+About that time,
+We were just fine.
+
+Tell me again,
+We met on the ground,
+Teardrops falling down.
+
+Tell me again,
+Your hand feeling sick
+While I was getting weak.
+
+Tell me again,
+Recovery, 
+Atrocities.
+
+Don’t say,
+Just pray 
+that I won’t stay.`
+      },
+      {
+        title: "BROKEN",
+        content: `You are not broken.
+You’re saying this sentence again and again,
+Trying to convince yourself.
+You’re not like these pieces of glass on the ground
+which can’t be repaired.
+You are not broken.
+Even if you seem to have lost everything,
+Even if i only feel pain in these days and
+You hide it perfectly with those smiles of yours.
+And you repeat it to yourself,
+when you’re surrounded by your friends, 
+when you're acting like nothing has happened, 
+when you feel a stranger in your own body.
+You say it because in that case it’ll be real.
+I am not broken`
+      },
+      {
+        title: "DON’T WORRY ABOUT ME",
+        content: `Don’t worry about me,
+I’ll always show you 
+Love,
+I’ll always smile to you,
+So you’ll think i’m 
+Okay.
+Even if it is not so,
+Even if i’m broken 
+Inside,
+Even if all I want is to
+Scream.
+Don’t worry about me,
+I’ll always listen to you,
+I’ll always comfort you,
+Even if you don’t do the 
+Same.
+Don’t worry about me,
+I’ll hide all the sad thoughts ,
+All my feelings,
+I’ll hide everything from you,
+So you don’t run away.`
+      }
+    ]
+  },
+  {
+    author: "Aya Vrantzoglou",
+    poems: [
+      {
+        title: "Growing pains",
+        content: `I'm not upset that I have to make my own doctors appointments now
+nor is it my commute to work or my tinfoil wrapped lunches
+I don't mind helping out my parents or my upcoming university semester lurking around the corner
+
+I want to grow up
+I've never been scared of aging or fine lines
+but something is missing 
+maybe i shouldn't have expected so much
+- how dare you be so ungrateful
+I have food, shelter and proximity to my loved ones in a time of war and crime.
+Can I acknowledge this and still yearn for the palm trees and the ocean?
+Is it such a crime to want to feed my soul?`
+      },
+      {
+        title: "Cup half full",
+        content: `recycled conversations
+entail,
+ignite me 
+you will not be withheld from me 
+it is proud immoderacy,
+to obsessively and shamelessly indulge in you
+i pour myself into you
+i like to lose myself that way`
+      },
+      {
+        title: "From a diary entry",
+        content: `Sometimes everything outside of you grows quiet: not because the world has changed, but because you’ve stopped reaching for it. In that stillness, something truer begins to rise. It isn’t loud or urgent. It doesn’t demand attention. It simply exists, steady and patient, like it has been waiting for you to notice.
+Being in tune with your soul feels less like discovery and more like recognition. As if you’ve stepped back into a space that has always belonged to you. There’s a softness there, but also a quiet strength: a sense that you no longer need to push or prove anything.
+Creativity flows differently in this place. It doesn’t come from pressure or overthinking. It unfolds naturally, like breath. Ideas drift in without force, and expression becomes something instinctive rather than constructed. You’re no longer chasing inspiration; you’re allowing it to move through you.
+Alignment isn’t about getting everything “right.” It’s about being real. It’s choosing what resonates within you, even when it doesn’t match expectations. It’s trusting that your inner voice knows the way, even when it speaks in whispers.
+When you’re connected like this, creating feels effortless: not because it takes no energy, but because it feels true. You’re not trying to become something. You’re simply letting yourself be, and letting that be enough.
+And in that space, you realize something subtle but powerful:
+what you’ve been looking for was never out of reach:
+it was waiting in the quiet, for you to come back to yourself.`
+      }
+    ]
+  }
+];
+
 const AboutProjectSection = () => {
+    const [isWritingsOpen, setIsWritingsOpen] = useState(false);
+
     return (
         <section className="relative z-10 py-32 px-4 max-w-6xl mx-auto border-t border-white/5">
             {/* Background Pattern */}
@@ -218,7 +397,7 @@ const AboutProjectSection = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
                 <motion.div 
                     initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-                    className="p-8 md:p-10 rounded-3xl bg-white/[0.02] border border-white/[0.05] relative overflow-hidden group shadow-2xl"
+                    className="p-8 md:p-10 rounded-3xl bg-white/[0.02] border border-white/[0.05] relative overflow-hidden group shadow-2xl flex flex-col"
                 >
                     <div className="absolute inset-0 bg-gradient-to-br from-neon-pink/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <h3 className="text-2xl font-semibold mb-6 text-neon-pink drop-shadow-[0_0_8px_rgba(255,42,133,0.5)] relative z-10 flex items-center gap-3">
@@ -227,9 +406,17 @@ const AboutProjectSection = () => {
                     <p className="text-white/70 leading-relaxed mb-6 font-light relative z-10 text-lg">
                         Rooted in the DIY zine community and driven by vibrant hot pink themes, this collective project weaves together personal narratives, profound poetry, and expressive visual art. It is a shared journey exploring corporality, human identities, memory, and culture.
                     </p>
-                    <p className="text-white/70 leading-relaxed font-light relative z-10 text-lg">
+                    <p className="text-white/70 leading-relaxed font-light relative z-10 text-lg mb-8">
                         Through evocative writings like <span className="italic text-white">"Just Words,"</span> <span className="italic text-white">"Growing Pains,"</span> and <span className="italic text-white">"I Burn Slow,"</span> the project acts as an emotional archive reflecting our raw vulnerabilities and pure expressions of the soul, all waiting to be heard.
                     </p>
+                    
+                    <button 
+                        onClick={() => setIsWritingsOpen(true)}
+                        className="mt-auto relative z-10 w-fit px-6 py-3 rounded-full border border-neon-pink/30 bg-neon-pink/5 text-neon-pink font-medium hover:bg-neon-pink/10 hover:border-neon-pink/50 transition-all duration-300 flex items-center gap-2 group/btn"
+                    >
+                        Learn More
+                        <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </button>
                 </motion.div>
 
                 <motion.div 
@@ -264,6 +451,65 @@ const AboutProjectSection = () => {
                     </ul>
                 </motion.div>
             </div>
+
+            {/* Writings Modal */}
+            <AnimatePresence>
+                {isWritingsOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 md:p-10 overflow-y-auto pt-20"
+                        onClick={() => setIsWritingsOpen(false)}
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] w-full max-w-4xl max-h-[85vh] overflow-hidden relative flex flex-col shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Close Button */}
+                            <button 
+                                onClick={() => setIsWritingsOpen(false)}
+                                className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors z-20"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+
+                            <div className="p-8 md:p-12 overflow-y-auto custom-scrollbar">
+                                <h3 className="text-4xl font-bold mb-12 text-transparent bg-clip-text bg-gradient-to-r from-neon-pink to-neon-purple inline-block">Project Writings</h3>
+                                
+                                <div className="space-y-20">
+                                    {WRITINGS.map((section, idx) => (
+                                        <div key={idx} className="space-y-12">
+                                            <div className="flex items-center gap-4 border-b border-white/5 pb-4">
+                                                <div className={`w-2 h-8 rounded-full ${idx === 0 ? 'bg-neon-pink shadow-[0_0_10px_#ff2a85]' : 'bg-neon-cyan shadow-[0_0_10px_#00f3ff]'}`} />
+                                                <h4 className="text-2xl font-semibold tracking-wide">{section.author}</h4>
+                                            </div>
+
+                                            <div className="grid gap-12">
+                                                {section.poems.map((poem, pIdx) => (
+                                                    <div key={pIdx} className="space-y-4">
+                                                        <h5 className="text-white/40 text-xs font-bold uppercase tracking-[0.2em]">{poem.title}</h5>
+                                                        <div className="text-white/80 font-light leading-relaxed whitespace-pre-line text-lg italic border-l border-white/10 pl-6">
+                                                            {poem.content}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Modal Footer decorative blob */}
+                            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-neon-pink/10 blur-[100px] rounded-full pointer-events-none" />
+                            <div className="absolute -top-20 -left-20 w-64 h-64 bg-neon-cyan/10 blur-[100px] rounded-full pointer-events-none" />
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     );
 };

@@ -21,6 +21,7 @@ type StoreContextType = {
     rejectArtwork: (id: string) => Promise<void>;
     deleteArtwork: (id: string) => Promise<void>;
     linkMusic: (id: string, data: string | File, type: string) => Promise<void>;
+    removeMusicTrack: (id: string, trackIndex: number) => Promise<void>;
 };
 
 const StoreContext = createContext<StoreContextType | null>(null);
@@ -167,6 +168,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         await refreshArtworks();
     };
 
+    const removeMusicTrack = async (id: string, trackIndex: number) => {
+        const res = await fetch(`/api/artworks/${id}/music?index=${trackIndex}`, {
+            method: "DELETE",
+            credentials: "include",
+        });
+        if (!res.ok) throw new Error(await parseError(res));
+        await refreshArtworks();
+    };
+
     return (
         <StoreContext.Provider
             value={{
@@ -184,6 +194,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
                 rejectArtwork,
                 deleteArtwork,
                 linkMusic,
+                removeMusicTrack,
             }}
         >
             {children}

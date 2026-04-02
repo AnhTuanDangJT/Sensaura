@@ -10,6 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useStore } from "@/lib/store";
+import { sameEmail } from "@/lib/utils";
 
 export default function AddMusicPage() {
     const params = useParams();
@@ -23,7 +24,7 @@ export default function AddMusicPage() {
     const storeArt = artworks.find(a => a.id === id);
     const hasMaxTracks = storeArt?.audioTracks ? storeArt.audioTracks.length >= 3 : false;
 
-    if (hydrated && storeArt && currentUser?.email !== storeArt.userEmail) {
+    if (hydrated && storeArt && !sameEmail(currentUser?.email, storeArt.userEmail)) {
         return (
             <div className="max-w-2xl mx-auto pb-20 mt-32 text-center">
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 mb-6">

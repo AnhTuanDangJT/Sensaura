@@ -3,11 +3,13 @@
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { motion, AnimatePresence } from "framer-motion";
-import { PlayCircle, PauseCircle, SkipBack, SkipForward, ArrowLeft, Heart, Share2, Volume2, FileText, X } from "lucide-react";
+import { PlayCircle, PauseCircle, SkipBack, SkipForward, ArrowLeft, Heart, Share2, Volume2, FileText, X, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useStore } from "@/lib/store";
+import { sameEmail } from "@/lib/utils";
 
 export default function ArtworkViewPage() {
     const params = useParams();
@@ -15,7 +17,8 @@ export default function ArtworkViewPage() {
     const [playingIndex, setPlayingIndex] = useState<number | null>(null);
     const [isLiked, setIsLiked] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { artworks, currentUser } = useStore();
+    const { artworks, currentUser, removeMusicTrack } = useStore();
+    const [removingIndex, setRemovingIndex] = useState<number | null>(null);
 
     const storeArt = artworks.find(a => a.id === id);
     const art: any = storeArt ? {
@@ -25,7 +28,7 @@ export default function ArtworkViewPage() {
         id: "placeholder", title: "Unknown Canvas", artist: "Anonymous", hasMusic: false, image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&auto=format&fit=crop", desc: "No description provided for this artwork.", fileType: "image", userEmail: ""
     };
 
-    const isOwner = currentUser?.email === art.userEmail;
+    const isOwner = sameEmail(currentUser?.email, art.userEmail);
 
     return (
         <>
@@ -128,15 +131,38 @@ export default function ArtworkViewPage() {
                                         <Card className="bg-black/80 border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] p-0 overflow-hidden relative">
                                             <div className="absolute inset-0 bg-gradient-to-tr from-neon-pink/10 to-neon-cyan/10 pointer-events-none" />
                                             <div className="p-8 relative z-10">
-                                                <div className="flex items-center gap-5 mb-6">
+                                                <div className="flex items-start gap-5 mb-6">
                                                     <div className="w-16 h-16 rounded-2xl bg-black flex flex-shrink-0 items-center justify-center border border-white/10 shadow-[0_0_20px_rgba(255,42,133,0.3)] overflow-hidden relative">
                                                         {playingIndex === idx && <div className="absolute inset-0 bg-neon-pink/20 animate-pulse" />}
                                                         <Volume2 className={`h-7 w-7 text-neon-pink relative z-10 transition-transform ${playingIndex === idx ? 'scale-110' : ''}`} />
                                                     </div>
-                                                    <div>
+                                                    <div className="flex-1 min-w-0">
                                                         <h4 className="text-white font-bold text-xl truncate leading-tight mb-1">Sonic Environment {idx + 1}</h4>
                                                         <p className="text-white/50 text-base">{art.artist} Originals</p>
                                                     </div>
+                                                    {isOwner && (
+                                                        <button
+                                                            type="button"
+                                                            title="Remove this track"
+                                                            disabled={removingIndex !== null}
+                                                            onClick={async () => {
+                                                                if (!confirm("Remove this music from your artwork?")) return;
+                                                                setRemovingIndex(idx);
+                                                                try {
+                                                                    await removeMusicTrack(id, idx);
+                                                                    setPlayingIndex(null);
+                                                                    toast.success("Music removed from your artwork.");
+                                                                } catch (err) {
+                                                                    toast.error(err instanceof Error ? err.message : "Could not remove track.");
+                                                                } finally {
+                                                                    setRemovingIndex(null);
+                                                                }
+                                                            }}
+                                                            className="shrink-0 p-2.5 rounded-xl border border-white/15 text-white/50 hover:text-red-400 hover:border-red-500/40 hover:bg-red-500/10 transition-colors disabled:opacity-40"
+                                                        >
+                                                            <Trash2 className="h-5 w-5" />
+                                                        </button>
+                                                    )}
                                                 </div>
 
                                                 {track.type === "youtube" ? (
