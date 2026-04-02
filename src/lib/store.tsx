@@ -39,23 +39,15 @@ const StoreContext = createContext<StoreContextType | null>(null);
 
 const INITIAL_USERS: User[] = [
     { id: "1", name: "Anh Tuan", email: "dganhtuan.2k5@gmail.com", role: "ADMIN" },
-    { id: "2", name: "CyberJane", email: "jane@example.com", role: "USER" },
-    { id: "3", name: "JohnDoe", email: "john@example.com", role: "USER" },
-    { id: "4", name: "AudioVisual", email: "av@example.com", role: "USER" },
 ];
 
-const INITIAL_ARTWORKS: Artwork[] = [
-    { id: "1", title: "Neon Nights", artist: "CyberJane", status: "Approved", hasMusic: true, image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop", userEmail: "jane@example.com", fileType: "image" },
-    { id: "2", title: "Abstract Thoughts", artist: "JohnDoe", status: "Pending", hasMusic: false, image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2670&auto=format&fit=crop", userEmail: "john@example.com", fileType: "image" },
-    { id: "3", title: "Sonic Landscape", artist: "AudioVisual", status: "Approved", hasMusic: true, image: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2670&auto=format&fit=crop", userEmail: "av@example.com", fileType: "image" },
-    { id: "4", title: "Ethereal Dream", artist: "Dreamer", status: "Approved", hasMusic: true, image: "https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=2679&auto=format&fit=crop", userEmail: "dreamer@example.com", fileType: "image" },
-    { id: "5", title: "Chromatic Aberration", artist: "Colorist", status: "Pending", hasMusic: false, image: "https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?q=80&w=2574&auto=format&fit=crop", userEmail: "colorist@example.com", fileType: "image" },
-];
+const INITIAL_ARTWORKS: Artwork[] = [];
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [users] = useState<User[]>(INITIAL_USERS);
     const [artworks, setArtworks] = useState<Artwork[]>(INITIAL_ARTWORKS);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     // Persist session artificially for demo
     useEffect(() => {
@@ -66,7 +58,21 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
             // Force admin login for the exercise initially
             setCurrentUser(INITIAL_USERS[0]);
         }
+
+        // Load persisted artworks
+        const storedArt = localStorage.getItem("sensaura_artworks");
+        if (storedArt && storedArt !== "[]") {
+            try { setArtworks(JSON.parse(storedArt)); } catch (e) {}
+        }
+        setIsLoaded(true);
     }, []);
+
+    // Sync artworks to local storage whenever a user modifies them
+    useEffect(() => {
+        if (isLoaded) {
+            localStorage.setItem("sensaura_artworks", JSON.stringify(artworks));
+        }
+    }, [artworks, isLoaded]);
 
     const login = (email: string) => {
         const user = users.find(u => u.email === email);
