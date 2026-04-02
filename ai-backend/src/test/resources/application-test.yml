@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+
+app:
+  jwt:
+    # Test secret; in real deployments provide JWT_SECRET via environment variables.
+    secret: test-jwt-secret-test-jwt-secret-test-jwt-secret
+

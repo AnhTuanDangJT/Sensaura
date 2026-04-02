@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: ai-backend
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+server:
+  error:
+    include-message: never
+
+app:
+  jwt:
+    # Empty if unset so startup fails with a clear JwtService message (or use profile "local")
+    secret: ${JWT_SECRET:}
+    cookie-name: AUTH_TOKEN
+    cookie-secure: ${JWT_COOKIE_SECURE:false}
+    cookie-same-site: Lax
+  sse:
+    emitter-timeout-ms: 120000
+

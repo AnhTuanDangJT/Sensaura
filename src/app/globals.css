@@ -1,26 +1,105 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-pacifico);
 
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  /* Neon Colors */
+  --color-neon-pink: #ff2a85;
+  --color-neon-cyan: #00f3ff;
+  --color-neon-purple: #b026ff;
+
+  /* Custom Animations */
+  --animate-draw: draw 3s ease-in-out forwards;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+
+  @keyframes draw {
+    from {
+      stroke-dashoffset: 1000;
+      stroke-dasharray: 1000;
+    }
+
+    to {
+      stroke-dashoffset: 0;
+      stroke-dasharray: 1000;
+    }
+  }
+
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 10px -2px rgba(255, 42, 133, 0.3);
+    }
+
+    to {
+      box-shadow: 0 0 20px 4px rgba(255, 42, 133, 0.6);
+    }
+  }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  /* Default to Dark Theme for Art Platform */
+  --background: #050505;
+  --foreground: #fafafa;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 42, 133, 0.6);
+  /* Neon pink */
+}
+
+@layer utilities {
+  .glass {
+    --glass-shadow: 0 8px 32px 0 rgba(0,0,0,0.3);
+    background-color: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .glass-card {
+    --glass-shadow: 0 8px 32px 0 rgba(0,0,0,0.3);
+    background-color: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: var(--glass-shadow);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 250ms;
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 12px 40px 0 rgba(255,42,133,0.15);
+    border-color: rgba(255,42,133,0.3);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 15px rgba(255,42,133,0.6);
+  }
 }
