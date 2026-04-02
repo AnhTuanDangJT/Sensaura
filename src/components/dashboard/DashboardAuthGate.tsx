@@ -1,20 +1,27 @@
 "use client";
 
 import { useStore } from "@/lib/store";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 export function DashboardAuthGate({ children }: { children: React.ReactNode }) {
     const { currentUser, hydrated, serverConfigured } = useStore();
     const router = useRouter();
 
+    const pathname = usePathname();
+
     useEffect(() => {
         if (!hydrated) return;
         if (!serverConfigured) return;
+        
+        // Allowed public routes in dashboard
+        const isPublicRoute = pathname === "/dashboard" || pathname?.startsWith("/dashboard/artwork/");
+        if (isPublicRoute) return;
+
         if (!currentUser) {
             router.replace("/auth/login");
         }
-    }, [hydrated, serverConfigured, currentUser, router]);
+    }, [hydrated, serverConfigured, currentUser, router, pathname]);
 
     if (!hydrated) {
         return (
@@ -38,6 +45,11 @@ export function DashboardAuthGate({ children }: { children: React.ReactNode }) {
     }
 
     if (!currentUser) {
+        const isPublicRoute = pathname === "/dashboard" || pathname?.startsWith("/dashboard/artwork/");
+        if (isPublicRoute) {
+            return <>{children}</>;
+        }
+
         return (
             <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#050505] text-white">
                 <div className="h-10 w-10 border-2 border-neon-pink border-t-transparent rounded-full animate-spin" />

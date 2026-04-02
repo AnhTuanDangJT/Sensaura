@@ -99,6 +99,19 @@ export default function ArtworkViewPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2, duration: 0.6 }}
                     >
+                        {!currentUser && (
+                            <div className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-neon-pink/10 to-neon-purple/10 border border-white/10 flex items-center justify-between gap-4">
+                                <p className="text-white/70 text-sm">
+                                    <span className="text-white font-semibold">Guest Mode:</span> You are viewing this artwork as a guest. 
+                                    Sign in for the full immersive experience.
+                                </p>
+                                <Link href="/auth/login">
+                                    <Button className="bg-white text-black hover:bg-white/90 rounded-full h-8 px-4 py-0 text-xs shadow-none">
+                                        Sign In
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
                         <div className="flex justify-between items-start mb-6">
                             <div>
                                 <h1 className="text-5xl lg:text-7xl font-bold tracking-tighter mb-4 text-glow text-white leading-tight">{art.title}</h1>
@@ -107,10 +120,25 @@ export default function ArtworkViewPage() {
                         </div>
 
                         <div className="flex gap-4 mb-8">
-                            <button onClick={() => setIsLiked(!isLiked)} className={`p-4 rounded-full border border-white/10 glass-card bg-black/20 hover:bg-black/40 transition-colors shadow-none ${isLiked ? 'text-neon-pink border-neon-pink/30' : 'text-white'}`}>
+                            <button 
+                                onClick={() => {
+                                    if (!currentUser) {
+                                        toast.error("Please sign in to like artworks.");
+                                        return;
+                                    }
+                                    setIsLiked(!isLiked);
+                                }} 
+                                className={`p-4 rounded-full border border-white/10 glass-card bg-black/20 hover:bg-black/40 transition-colors shadow-none ${isLiked ? 'text-neon-pink border-neon-pink/30' : 'text-white'}`}
+                            >
                                 <Heart className={`h-6 w-6 ${isLiked ? 'fill-neon-pink' : ''}`} />
                             </button>
-                            <button className="p-4 rounded-full border border-white/10 glass-card bg-black/20 hover:bg-black/40 text-white transition-colors shadow-none">
+                            <button 
+                                onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    toast.success("Link copied to clipboard!");
+                                }}
+                                className="p-4 rounded-full border border-white/10 glass-card bg-black/20 hover:bg-black/40 text-white transition-colors shadow-none"
+                            >
                                 <Share2 className="h-6 w-6" />
                             </button>
                         </div>

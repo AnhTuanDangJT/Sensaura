@@ -1112,10 +1112,8 @@ export default function SensauraLanding() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="font-heading text-3xl tracking-wide text-white/90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Sensaura</div>
           <div className="text-white/40 text-sm">© {new Date().getFullYear()} Sensaura Experience. All emotions respected.</div>
-          <div className="flex items-center gap-6 text-white/50 text-sm font-medium">
-            <Link href="#" className="hover:text-neon-cyan transition-colors">Twitter</Link>
-            <Link href="#" className="hover:text-neon-pink transition-colors">Instagram</Link>
-            <Link href="#" className="hover:text-neon-purple transition-colors">SoundCloud</Link>
+          <div className="italic text-white/40 text-sm tracking-widest">
+            "How does your soul speak?"
           </div>
         </div>
       </footer>

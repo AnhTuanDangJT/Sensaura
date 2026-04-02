@@ -20,9 +20,11 @@ export function Sidebar() {
     const pathname = usePathname();
     const { currentUser } = useStore();
 
-    const activeNavItems = canSeeAdminPanel(currentUser)
-        ? [...navItems, { icon: ShieldCheck, label: "Admin Panel", href: "/dashboard/admin" }]
-        : navItems;
+    const activeNavItems = currentUser 
+        ? (canSeeAdminPanel(currentUser)
+            ? [...navItems, { icon: ShieldCheck, label: "Admin Panel", href: "/dashboard/admin" }]
+            : navItems)
+        : navItems.filter(item => item.label === "Gallery");
 
     return (
         <motion.aside
@@ -76,6 +78,15 @@ export function Sidebar() {
                     );
                 })}
             </nav>
+
+            {!currentUser && !collapsed && (
+                <div className="px-6 py-8 mt-auto border-t border-white/5">
+                    <p className="text-white/40 text-xs font-semibold uppercase tracking-widest mb-4">Limited Experience</p>
+                    <Link href="/auth/login" className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-neon-pink to-neon-purple text-white text-sm font-bold shadow-[0_0_20px_rgba(255,42,133,0.3)] hover:scale-[1.02] transition-transform">
+                        Sign In / Join
+                    </Link>
+                </div>
+            )}
         </motion.aside>
     );
 }
