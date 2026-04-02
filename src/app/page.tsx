@@ -239,19 +239,19 @@ const AboutProjectSection = () => {
                     </h3>
                     <ul className="space-y-6 text-white/70 font-light relative z-10">
                         <li className="flex flex-col">
-                            <strong className="text-white text-lg tracking-wide">Saskia Crisconio</strong>
+                            <strong className="text-transparent bg-clip-text bg-gradient-to-r from-neon-pink to-neon-purple text-lg tracking-wide drop-shadow-[0_0_5px_rgba(255,42,133,0.5)]">Saskia Crisconio</strong>
                             <span className="text-sm">Creative writing & group process coordination.</span>
                         </li>
                         <li className="flex flex-col">
-                            <strong className="text-white text-lg tracking-wide">Aya Vrantzoglou</strong>
+                            <strong className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-pink text-lg tracking-wide drop-shadow-[0_0_5px_rgba(0,243,255,0.5)]">Aya Vrantzoglou</strong>
                             <span className="text-sm">Collaborative writing & core creative concept.</span>
                         </li>
                         <li className="flex flex-col">
-                            <strong className="text-white text-lg tracking-wide">Xhela Mocka</strong>
+                            <strong className="text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-neon-cyan text-lg tracking-wide drop-shadow-[0_0_5px_rgba(176,38,255,0.5)]">Xhela Mocka</strong>
                             <span className="text-sm">Visual artwork creation & physical zine production.</span>
                         </li>
                         <li className="flex flex-col">
-                            <strong className="text-white text-lg tracking-wide">Leen Jaafar</strong>
+                            <strong className="text-transparent bg-clip-text bg-gradient-to-r from-neon-pink to-white text-lg tracking-wide drop-shadow-[0_0_5px_rgba(255,42,133,0.5)]">Leen Jaafar</strong>
                             <span className="text-sm">Layout framing & visual orchestration.</span>
                         </li>
                         <li className="flex flex-col">
